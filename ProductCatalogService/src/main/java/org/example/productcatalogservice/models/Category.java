@@ -6,8 +6,8 @@ import lombok.Setter;
 
 import java.util.List;
 
-@Getter
 @Setter
+@Getter
 public class Category extends BaseModel{
     private String categoryName;
     private String categoryDescription;

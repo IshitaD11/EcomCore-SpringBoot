@@ -6,8 +6,8 @@ import lombok.Setter;
 
 import java.util.Date;
 
-@Getter
 @Setter
+@Getter
 public abstract class BaseModel {
 
     private Long id;
@@ -18,7 +18,4 @@ public abstract class BaseModel {
 
     private State state;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
 }
