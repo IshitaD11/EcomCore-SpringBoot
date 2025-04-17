@@ -4,6 +4,7 @@ import org.example.productcatalogservice.dtos.CategoryDto;
 import org.example.productcatalogservice.dtos.ProductDto;
 import org.example.productcatalogservice.models.Category;
 import org.example.productcatalogservice.models.Product;
+import org.example.productcatalogservice.repositories.CategoryRepository;
 import org.example.productcatalogservice.services.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,7 +19,10 @@ import java.util.List;
 public class ProductController {
 
     @Autowired
-    IProductService productService;
+    private IProductService productService;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     @GetMapping("/products")
     public ResponseEntity<List<ProductDto>> getProducts() {
@@ -52,15 +56,16 @@ public class ProductController {
     }
 
     @PostMapping("/products")
-    public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto productdto) {
+    public ProductDto createProduct(@RequestBody ProductDto productdto) {
         try{
-            if(productdto.getId()!= null && productdto.getId()<=20)
-                throw new RuntimeException( "Product id must be greater than 20" );
+//            if(productdto.getId()!= null && productdto.getId()<=20)
+//                throw new RuntimeException( "Product id must be greater than 20" );
             Product product = productService.createProduct(productFromProductDto(productdto));
             if (product == null) {
                 throw new RuntimeException("Product not found");
             }
-            return new ResponseEntity<>(productDtoFromProduct(product), HttpStatus.CREATED);
+//            return new ResponseEntity<>(productDtoFromProduct(product), HttpStatus.CREATED);
+            return productDtoFromProduct(product);
         }catch (Exception e){
             throw e;
         }
@@ -88,10 +93,20 @@ public class ProductController {
         product.setImgUrl(productdto.getImgUrl());
         if(productdto.getCategory() != null) {
             Category category = new Category();
-            category.setId(productdto.getCategory().getId());
-            category.setCategoryDescription(productdto.getCategory().getCategoryDescription());
-            category.setCategoryName(productdto.getCategory().getCategoryName());
-            product.setCategory(category);
+            if(productdto.getCategory().getId() != null) {
+                category = categoryRepository.findById(productdto.getCategory().getId()).orElse(null);
+            }
+            if(category != null){
+                product.setCategory(category);
+            }
+            else{
+                category = new Category();
+//                category.setId(productdto.getCategory().getId());
+                category.setCategoryDescription(productdto.getCategory().getCategoryDescription());
+                category.setCategoryName(productdto.getCategory().getCategoryName());
+                category = categoryRepository.save(category);
+                product.setCategory(category);
+            }
         }
         return product;
     }
