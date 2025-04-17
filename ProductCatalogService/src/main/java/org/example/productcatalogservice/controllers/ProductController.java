@@ -2,13 +2,16 @@ package org.example.productcatalogservice.controllers;
 
 import org.example.productcatalogservice.dtos.CategoryDto;
 import org.example.productcatalogservice.dtos.ProductDto;
+import org.example.productcatalogservice.models.Category;
 import org.example.productcatalogservice.models.Product;
 import org.example.productcatalogservice.services.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -18,8 +21,18 @@ public class ProductController {
     IProductService productService;
 
     @GetMapping("/products")
-    public List<ProductDto> getProducts() {
-        return null;
+    public ResponseEntity<List<ProductDto>> getProducts() {
+        try{
+            List<Product> products = productService.getAllProducts();
+            if(products != null && !products.isEmpty()){
+                List<ProductDto> productDtos = products.stream().map(this::productDtoFromProduct).toList();
+                return new ResponseEntity<>(productDtos, HttpStatus.OK);
+            }
+            else
+                throw new RuntimeException("No products found");
+        }catch (Exception e){
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping("/products/{id}")
@@ -39,8 +52,48 @@ public class ProductController {
     }
 
     @PostMapping("/products")
-    public ProductDto createProduct(@RequestBody ProductDto productdto) {
-        return null;
+    public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto productdto) {
+        try{
+            if(productdto.getId()!= null && productdto.getId()<=20)
+                throw new RuntimeException( "Product id must be greater than 20" );
+            Product product = productService.createProduct(productFromProductDto(productdto));
+            if (product == null) {
+                throw new RuntimeException("Product not found");
+            }
+            return new ResponseEntity<>(productDtoFromProduct(product), HttpStatus.CREATED);
+        }catch (Exception e){
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping("/products/{id}")
+    public ResponseEntity<ProductDto> replaceProduct(@PathVariable("id") Long id, @RequestBody ProductDto productdto) {
+        try{
+            Product product = productService.replaceProduct(id,productFromProductDto(productdto));
+            if (product == null) {
+                throw new RuntimeException("Product not found");
+            }
+            return new ResponseEntity<>(productDtoFromProduct(product), HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private Product productFromProductDto(ProductDto productdto) {
+        Product product = new Product();
+        product.setId(productdto.getId());
+        product.setTitle(productdto.getTitle());
+        product.setDescription(productdto.getDescription());
+        product.setPrice(productdto.getPrice());
+        product.setImgUrl(productdto.getImgUrl());
+        if(productdto.getCategory() != null) {
+            Category category = new Category();
+            category.setId(productdto.getCategory().getId());
+            category.setCategoryDescription(productdto.getCategory().getCategoryDescription());
+            category.setCategoryName(productdto.getCategory().getCategoryName());
+            product.setCategory(category);
+        }
+        return product;
     }
 
     private ProductDto productDtoFromProduct(Product product) {

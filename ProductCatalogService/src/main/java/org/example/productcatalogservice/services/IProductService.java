@@ -11,9 +11,11 @@ import java.util.List;
 
 public interface IProductService {
 
-    public List<Product> getProducts() ;
+    public List<Product> getAllProducts() ;
 
     public Product getProductById(Long productId) ;
 
     public Product createProduct(Product product) ;
+
+    public Product replaceProduct(Long productId, Product product) ;
 }
