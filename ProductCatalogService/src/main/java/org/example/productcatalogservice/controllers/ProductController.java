@@ -31,7 +31,7 @@ public class ProductController {
             else
                 throw new RuntimeException("No products found");
         }catch (Exception e){
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            throw e;
         }
     }
 
@@ -47,7 +47,7 @@ public class ProductController {
             }
             return new ResponseEntity<>(productDtoFromProduct(product), HttpStatus.OK);
         }catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            throw e;
         }
     }
 
@@ -62,7 +62,7 @@ public class ProductController {
             }
             return new ResponseEntity<>(productDtoFromProduct(product), HttpStatus.CREATED);
         }catch (Exception e){
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            throw e;
         }
     }
 
@@ -75,7 +75,7 @@ public class ProductController {
             }
             return new ResponseEntity<>(productDtoFromProduct(product), HttpStatus.OK);
         }catch (Exception e){
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            throw e;
         }
     }
 
