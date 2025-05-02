@@ -21,9 +21,6 @@ public class ProductController {
     @Autowired
     private IProductService productService;
 
-    @Autowired
-    private CategoryRepository categoryRepository;
-
     @GetMapping("/products")
     public ResponseEntity<List<ProductDto>> getProducts() {
         try{
@@ -42,12 +39,9 @@ public class ProductController {
     @GetMapping("/products/{id}")
     public ResponseEntity<ProductDto> getProductById(@PathVariable("id") Long productId) {
         try {
-            if (productId == null || productId <= 0 || productId > 20) {
-                throw new RuntimeException("Product not found");
-            }
             Product product = productService.getProductById(productId);
             if (product == null) {
-                return null;
+                throw new RuntimeException("Product not found");
             }
             return new ResponseEntity<>(productDtoFromProduct(product), HttpStatus.OK);
         }catch (Exception e) {
@@ -56,16 +50,13 @@ public class ProductController {
     }
 
     @PostMapping("/products")
-    public ProductDto createProduct(@RequestBody ProductDto productdto) {
+    public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto productdto) {
         try{
-//            if(productdto.getId()!= null && productdto.getId()<=20)
-//                throw new RuntimeException( "Product id must be greater than 20" );
             Product product = productService.createProduct(productFromProductDto(productdto));
             if (product == null) {
                 throw new RuntimeException("Product not found");
             }
-//            return new ResponseEntity<>(productDtoFromProduct(product), HttpStatus.CREATED);
-            return productDtoFromProduct(product);
+            return new ResponseEntity<>(productDtoFromProduct(product), HttpStatus.CREATED);
         }catch (Exception e){
             throw e;
         }
@@ -93,20 +84,10 @@ public class ProductController {
         product.setImgUrl(productdto.getImgUrl());
         if(productdto.getCategory() != null) {
             Category category = new Category();
-            if(productdto.getCategory().getId() != null) {
-                category = categoryRepository.findById(productdto.getCategory().getId()).orElse(null);
-            }
-            if(category != null){
-                product.setCategory(category);
-            }
-            else{
-                category = new Category();
-//                category.setId(productdto.getCategory().getId());
-                category.setCategoryDescription(productdto.getCategory().getCategoryDescription());
-                category.setCategoryName(productdto.getCategory().getCategoryName());
-                category = categoryRepository.save(category);
-                product.setCategory(category);
-            }
+            category.setId(productdto.getCategory().getId());
+            category.setCategoryDescription(productdto.getCategory().getCategoryDescription());
+            category.setCategoryName(productdto.getCategory().getCategoryName());
+            product.setCategory(category);
         }
         return product;
     }

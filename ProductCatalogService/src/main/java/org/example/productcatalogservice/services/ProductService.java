@@ -5,6 +5,7 @@ import org.example.productcatalogservice.dtos.FakeStoreProductDto;
 import org.example.productcatalogservice.models.Category;
 import org.example.productcatalogservice.models.Product;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,19 +25,26 @@ public class ProductService implements IProductService {
 
     @Override
     public Product getProductById(Long productId) {
+        if (productId == null || productId <= 0 || productId > 20) {
+            throw new RuntimeException("Product not found");
+        }
         FakeStoreProductDto fakeStoreProductDto = fakeStoreApiClient.getProductById(productId);
         return getProductFromFakeStoreProductDto(fakeStoreProductDto);
     }
 
-    // Need to do
+
     @Override
     public Product createProduct(Product product) {
+        if(product.getId()!= null && product.getId()<=20)
+            throw new RuntimeException( "Product id must be greater than 20" );
         FakeStoreProductDto fakeStoreProductDto = fakeStoreApiClient.createProduct(getFakeStoreProductDtoFromProduct(product));
         return getProductFromFakeStoreProductDto(fakeStoreProductDto);
     }
 
     @Override
     public Product replaceProduct(Long productId, Product product) {
+        if(productId!= null && productId<=20)
+                throw new RuntimeException( "Product id must be greater than 20" );
         FakeStoreProductDto fakeStoreProductDto = fakeStoreApiClient.replaceProduct(productId, getFakeStoreProductDtoFromProduct(product));
         return getProductFromFakeStoreProductDto(fakeStoreProductDto);
     }
