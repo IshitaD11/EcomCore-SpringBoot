@@ -30,8 +30,8 @@ class ProductControllerTest {
     @MockitoBean
     private IProductService productService;
 
-//    @Captor
-//    private ArgumentCaptor<Long> idCaptor;
+    @Captor
+    private ArgumentCaptor<Long> idCaptor;
 
     @Test
     public void testGetProductById_WithValidProductId_RunSuccessfully() {
@@ -65,20 +65,20 @@ class ProductControllerTest {
         assertThrows(RuntimeException.class, () -> productController.getProductById(10L));
     }
 
-//    @Test
-//    public void Test_GetProductById_ServiceCalledWithExpectedArguments_RunSuccessfully() {
-//        //Arrange
-//        Long productId = 1L;
-//        Product product = new Product();
-//        product.setId(productId);
-//        product.setTitle("Nokia");
-//        when(productService.getProductById(any(Long.class)))
-//                .thenReturn(product);
-//        //Act
-//        productController.getProductById(productId);
-//
-//        //Assert
-//        verify(productService).getProductById(idCaptor.capture());
-//        assertEquals(productId,idCaptor.getValue());
-//    }
+    @Test
+    public void Test_GetProductById_ServiceCalledWithExpectedArguments_RunSuccessfully() {
+        //Arrange
+        Long productId = 1L;
+        Product product = new Product();
+        product.setId(productId);
+        product.setTitle("Nokia");
+        when(productService.getProductById(any(Long.class)))
+                .thenReturn(product);
+        //Act
+        productController.getProductById(productId);
+
+        //Assert
+        verify(productService).getProductById(idCaptor.capture());
+        assertEquals(productId,idCaptor.getValue());
+    }
 }
