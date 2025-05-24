@@ -1,8 +1,12 @@
 package org.example.userauthenticationservice.services;
 
+import org.example.userauthenticationservice.exceptions.EmailAlreadyRegisteredException;
+import org.example.userauthenticationservice.exceptions.IncorrectEmailOrPassword;
+import org.example.userauthenticationservice.exceptions.UserNotFoundException;
+
 public interface IAuthService {
 
-    public boolean signup(String username, String password);
+    public boolean signup(String username, String password) throws EmailAlreadyRegisteredException;
 
-    public boolean login(String username, String password);
+    public String login(String username, String password) throws UserNotFoundException, IncorrectEmailOrPassword;
 }
