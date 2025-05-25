@@ -3,8 +3,12 @@ package org.example.userauthenticationservice.controllers;
 import org.example.userauthenticationservice.dtos.*;
 import org.example.userauthenticationservice.services.IAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.antlr.v4.runtime.misc.Pair;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,10 +43,11 @@ public class AuthController {
     public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto requestDto){
         LoginResponseDto responseDto = new LoginResponseDto();
         try{
-                String token = authService.login(requestDto.getEmail(), requestDto.getPassword());
-                responseDto.setToken(token);
+                Pair<Boolean,String> withToken = authService.login(requestDto.getEmail(), requestDto.getPassword());
                 responseDto.setResponseStatus(ResponseStatus.SUCCESS);
-                return new ResponseEntity<>(responseDto, HttpStatus.OK);
+                MultiValueMap<String,String> headers = new LinkedMultiValueMap<>();
+                headers.add(HttpHeaders.COOKIE, withToken.b);
+                return new ResponseEntity<>(responseDto, headers, HttpStatus.OK);
         }catch (Exception ex){
             responseDto.setResponseStatus(ResponseStatus.FAILURE);
             return new ResponseEntity<>(responseDto, HttpStatus.BAD_REQUEST);
