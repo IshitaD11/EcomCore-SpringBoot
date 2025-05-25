@@ -15,7 +15,8 @@ public class AuthService implements IAuthService {
     @Autowired
     private UserRepository userRepository;
 
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
     @Override
     public boolean signup(String email, String password) throws EmailAlreadyRegisteredException {
