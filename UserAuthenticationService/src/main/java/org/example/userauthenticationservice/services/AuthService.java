@@ -9,6 +9,7 @@ import org.example.userauthenticationservice.exceptions.IncorrectEmailOrPassword
 import org.example.userauthenticationservice.exceptions.UserNotFoundException;
 import org.example.userauthenticationservice.repositories.SessionRepository;
 import org.example.userauthenticationservice.repositories.UserRepository;
+import org.example.userauthenticationservice.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.antlr.v4.runtime.misc.Pair;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -30,10 +31,10 @@ public class AuthService implements IAuthService {
     private BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
-    private SecretKey secretKey;
+    private SessionRepository sessionRepo;
 
     @Autowired
-    private SessionRepository sessionRepo;
+    private JwtUtil jwtUtil;
 
     @Override
     public boolean signup(String email, String password) throws EmailAlreadyRegisteredException {
@@ -53,17 +54,7 @@ public class AuthService implements IAuthService {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException());
         if(passwordEncoder.matches(password, user.getPassword())) {
 
-//            MacAlgorithm algorithm = Jwts.SIG.HS256;
-//            SecretKey secretKey = algorithm.key().build();
-
-            Map<String,Object> claims = new HashMap<>();
-            Long currentTimeInMillis = System.currentTimeMillis();
-            claims.put("iat", currentTimeInMillis); // issued At time
-            claims.put("exp", currentTimeInMillis + (24 * 60 * 60 * 1000));
-            claims.put("user_id", user.getId());
-            claims.put("issuer", "ECom");
-
-            String token = Jwts.builder().claims(claims).signWith(secretKey).compact();
+            String token = jwtUtil.generateToken(user);
             return new Pair<>(true,token);
         }
         else
@@ -78,15 +69,8 @@ public class AuthService implements IAuthService {
             return false;
         }
 
-        JwtParser jwtParser = Jwts.parser().verifyWith(secretKey).build();
-        Claims claims = jwtParser.parseSignedClaims(token).getPayload();
 
-        Long expiry = (Long)claims.get("exp");
-        Long currentTimeStamp = System.currentTimeMillis();
-
-        if(currentTimeStamp > expiry) {
-            System.out.println(expiry);
-            System.out.println(currentTimeStamp);
+        if(jwtUtil.verifyToken(userId, token)) {
             System.out.println("Token is expired");
 
             //Marking session entry as expired
