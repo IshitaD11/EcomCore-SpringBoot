@@ -21,12 +21,15 @@ public class ProductController {
     @Autowired
     private IProductService productService;
 
+    @Autowired
+    private ProductProductDTOUtil pDtoUtil;
+
     @GetMapping("/products")
     public ResponseEntity<List<ProductDto>> getProducts() {
         try{
             List<Product> products = productService.getAllProducts();
             if(products != null && !products.isEmpty()){
-                List<ProductDto> productDtos = products.stream().map(this::productDtoFromProduct).toList();
+                List<ProductDto> productDtos = products.stream().map(pDtoUtil::productDtoFromProduct).toList();
                 return new ResponseEntity<>(productDtos, HttpStatus.OK);
             }
             else
@@ -43,7 +46,7 @@ public class ProductController {
             if (product == null) {
                 throw new RuntimeException("Product not found");
             }
-            return new ResponseEntity<>(productDtoFromProduct(product), HttpStatus.OK);
+            return new ResponseEntity<>(pDtoUtil.productDtoFromProduct(product), HttpStatus.OK);
         }catch (Exception e) {
             throw e;
         }
@@ -52,11 +55,11 @@ public class ProductController {
     @PostMapping("/products")
     public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto productdto) {
         try{
-            Product product = productService.createProduct(productFromProductDto(productdto));
+            Product product = productService.createProduct(pDtoUtil.productFromProductDto(productdto));
             if (product == null) {
                 throw new RuntimeException("Product not found");
             }
-            return new ResponseEntity<>(productDtoFromProduct(product), HttpStatus.CREATED);
+            return new ResponseEntity<>(pDtoUtil.productDtoFromProduct(product), HttpStatus.CREATED);
         }catch (Exception e){
             throw e;
         }
@@ -65,47 +68,14 @@ public class ProductController {
     @PutMapping("/products/{id}")
     public ResponseEntity<ProductDto> replaceProduct(@PathVariable("id") Long id, @RequestBody ProductDto productdto) {
         try{
-            Product product = productService.replaceProduct(id,productFromProductDto(productdto));
+            Product product = productService.replaceProduct(id,pDtoUtil.productFromProductDto(productdto));
             if (product == null) {
                 throw new RuntimeException("Product not found");
             }
-            return new ResponseEntity<>(productDtoFromProduct(product), HttpStatus.OK);
+            return new ResponseEntity<>(pDtoUtil.productDtoFromProduct(product), HttpStatus.OK);
         }catch (Exception e){
             throw e;
         }
     }
 
-    private Product productFromProductDto(ProductDto productdto) {
-        Product product = new Product();
-        product.setId(productdto.getId());
-        product.setTitle(productdto.getTitle());
-        product.setDescription(productdto.getDescription());
-        product.setPrice(productdto.getPrice());
-        product.setImgUrl(productdto.getImgUrl());
-        if(productdto.getCategory() != null) {
-            Category category = new Category();
-            category.setId(productdto.getCategory().getId());
-            category.setCategoryDescription(productdto.getCategory().getCategoryDescription());
-            category.setCategoryName(productdto.getCategory().getCategoryName());
-            product.setCategory(category);
-        }
-        return product;
-    }
-
-    private ProductDto productDtoFromProduct(Product product) {
-        ProductDto productDto = new ProductDto();
-        productDto.setId(product.getId());
-        productDto.setTitle(product.getTitle());
-        productDto.setDescription(product.getDescription());
-        productDto.setPrice(product.getPrice());
-        productDto.setImgUrl(product.getImgUrl());
-        if(product.getCategory() != null) {
-            CategoryDto categoryDto = new CategoryDto();
-            categoryDto.setId(product.getCategory().getId());
-            categoryDto.setCategoryDescription(product.getCategory().getCategoryDescription());
-            categoryDto.setCategoryName(product.getCategory().getCategoryName());
-            productDto.setCategory(categoryDto);
-        }
-        return productDto;
-    }
 }
