@@ -24,15 +24,13 @@ public class SearchController {
     private ProductProductDTOUtil pDtoUtil;
 
     @PostMapping
-    public Page<Product> searchProducts(@RequestBody SearchProductRequestDto requestDto){
+    public ResponseEntity<Page<ProductDto>> searchProducts(@RequestBody SearchProductRequestDto requestDto){
         try{
             Page<Product> products = searchService.searchProduct(requestDto.getQuery(),requestDto.getPageNo(), requestDto.getPageSize(),requestDto.getSortParamList());
-//            Page<ProductDto> productDtos = products.map(pDtoUtil::productDtoFromProduct);
-            return products;
-//            return new ResponseEntity<>(products, HttpStatus.OK);
+            Page<ProductDto> productDtos = products.map(pDtoUtil::productDtoFromProduct);
+            return new ResponseEntity<>(productDtos, HttpStatus.OK);
         }catch(Exception e){
-//            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-            return null;
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
 
