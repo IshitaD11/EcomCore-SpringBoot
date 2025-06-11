@@ -1,6 +1,7 @@
 package org.example.userauthenticationservice.controllers;
 
 import org.example.userauthenticationservice.dtos.*;
+import org.example.userauthenticationservice.models.User;
 import org.example.userauthenticationservice.services.IAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.antlr.v4.runtime.misc.Pair;
@@ -25,14 +26,13 @@ public class AuthController {
     @PostMapping("/sign_up")
     public ResponseEntity<SignUpResponseDto> signUp(@RequestBody SignUpRequestDto requestDto){
         SignUpResponseDto responseDto = new SignUpResponseDto();
+        if(requestDto.getEmail() == null || requestDto.getPassword() == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
         try{
-            if(authService.signup(requestDto.getEmail(), requestDto.getPassword())){
+                User user = authService.signup(requestDto.getEmail(), requestDto.getPassword());
                 responseDto.setResponseStatus(ResponseStatus.SUCCESS);
-            }
-            else{
-                responseDto.setResponseStatus(ResponseStatus.FAILURE);
-            }
-            return new ResponseEntity<>(responseDto, HttpStatus.OK);
+                return new ResponseEntity<>(responseDto, HttpStatus.OK);
         }catch (Exception ex){
             responseDto.setResponseStatus(ResponseStatus.FAILURE);
             return new ResponseEntity<>(responseDto, HttpStatus.BAD_REQUEST);

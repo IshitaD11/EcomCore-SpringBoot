@@ -1,9 +1,13 @@
 package org.example.userauthenticationservice.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.MacAlgorithm;
+import org.example.userauthenticationservice.clients.KafkaClient;
+import org.example.userauthenticationservice.dtos.EmailDto;
 import org.example.userauthenticationservice.exceptions.EmailAlreadyRegisteredException;
 import org.example.userauthenticationservice.exceptions.IncorrectEmailOrPassword;
 import org.example.userauthenticationservice.exceptions.UserNotFoundException;
@@ -36,8 +40,14 @@ public class AuthService implements IAuthService {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Autowired
+    private KafkaClient kafkaClient;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @Override
-    public boolean signup(String email, String password) throws EmailAlreadyRegisteredException {
+    public User signup(String email, String password) throws EmailAlreadyRegisteredException {
         if(userRepository.findByEmail(email).isPresent()) {
             throw new EmailAlreadyRegisteredException();
         }
@@ -46,7 +56,21 @@ public class AuthService implements IAuthService {
         user.setEmail(email);
         user.setPassword(hashedPassword);
         userRepository.save(user);
-        return true;
+
+        try {
+            String topic = "user_signedin";
+            EmailDto emailDto = new EmailDto();
+            emailDto.setFrom("anuragbatch@gmail.com");
+            emailDto.setTo(email);
+            emailDto.setSubject("Welcome to Scaler");
+            emailDto.setBody("Have a pleasant learning experience.");
+            String message = objectMapper.writeValueAsString(emailDto);
+            kafkaClient.sendMessage(topic,message);
+
+        }catch (JsonProcessingException exception) {
+            throw new RuntimeException(exception.getMessage());
+        }
+        return user;
     }
 
     @Override
