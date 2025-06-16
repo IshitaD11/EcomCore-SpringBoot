@@ -58,14 +58,15 @@ public class AuthService implements IAuthService {
         userRepository.save(user);
 
         try {
-            String topic = "user_signedin";
+            String topic = "user_signup";
             EmailDto emailDto = new EmailDto();
-            emailDto.setFrom("anuragbatch@gmail.com");
+            emailDto.setFrom("springbootecom@gmail.com");
             emailDto.setTo(email);
-            emailDto.setSubject("Welcome to Scaler");
-            emailDto.setBody("Have a pleasant learning experience.");
+            emailDto.setSubject("Welcome to EService");
+            emailDto.setBody("Have a pleasant shopping experience.");
             String message = objectMapper.writeValueAsString(emailDto);
             kafkaClient.sendMessage(topic,message);
+            System.out.println("Sending message to Kafka: " + message);
 
         }catch (JsonProcessingException exception) {
             throw new RuntimeException(exception.getMessage());
