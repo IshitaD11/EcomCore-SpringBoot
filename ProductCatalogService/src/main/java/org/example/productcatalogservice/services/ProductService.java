@@ -6,15 +6,20 @@ import org.example.productcatalogservice.models.Category;
 import org.example.productcatalogservice.models.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+//@Primary
 public class ProductService implements IProductService {
 
     @Autowired
     private FakeStoreApiClient fakeStoreApiClient;
+
+    @Autowired
+    private RedisTemplate<String,Object> redisTemplate;
 
     @Override
     public List<Product> getAllProducts() {
@@ -28,8 +33,21 @@ public class ProductService implements IProductService {
         if (productId == null || productId <= 0 || productId > 20) {
             throw new RuntimeException("Product not found");
         }
-        FakeStoreProductDto fakeStoreProductDto = fakeStoreApiClient.getProductById(productId);
-        return getProductFromFakeStoreProductDto(fakeStoreProductDto);
+        FakeStoreProductDto fakeStoreProductDto = null;
+
+        fakeStoreProductDto = (FakeStoreProductDto)redisTemplate.opsForHash().get("__PRODUCTS__",productId);
+        if(fakeStoreProductDto !=null) {
+            System.out.println("FOUND IN CACHE !!");
+            return getProductFromFakeStoreProductDto(fakeStoreProductDto);
+        }
+
+        fakeStoreProductDto = fakeStoreApiClient.getProductById(productId);
+        if(fakeStoreProductDto!=null) {
+            System.out.println("FOUND BY CALLING FAKESTORE !!");
+            redisTemplate.opsForHash().put("__PRODUCTS__",productId,fakeStoreProductDto);
+            return getProductFromFakeStoreProductDto(fakeStoreProductDto);
+        }
+        return null;
     }
 
 
