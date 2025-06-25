@@ -10,7 +10,9 @@ import org.example.userauthenticationservice.clients.KafkaClient;
 import org.example.userauthenticationservice.dtos.EmailDto;
 import org.example.userauthenticationservice.exceptions.EmailAlreadyRegisteredException;
 import org.example.userauthenticationservice.exceptions.IncorrectEmailOrPassword;
+import org.example.userauthenticationservice.exceptions.InvalidRoleNameException;
 import org.example.userauthenticationservice.exceptions.UserNotFoundException;
+import org.example.userauthenticationservice.repositories.RoleRepository;
 import org.example.userauthenticationservice.repositories.SessionRepository;
 import org.example.userauthenticationservice.repositories.UserRepository;
 import org.example.userauthenticationservice.security.JwtUtil;
@@ -21,9 +23,7 @@ import org.springframework.stereotype.Service;
 import org.example.userauthenticationservice.models.*;
 
 import javax.crypto.SecretKey;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class AuthService implements IAuthService {
@@ -38,6 +38,9 @@ public class AuthService implements IAuthService {
     private SessionRepository sessionRepo;
 
     @Autowired
+    private RoleRepository roleRepository;
+
+    @Autowired
     private JwtUtil jwtUtil;
 
     @Autowired
@@ -47,7 +50,7 @@ public class AuthService implements IAuthService {
     private ObjectMapper objectMapper;
 
     @Override
-    public User signup(String email, String password) throws EmailAlreadyRegisteredException {
+    public User signup(String email, String password, String role) throws EmailAlreadyRegisteredException, InvalidRoleNameException {
         if(userRepository.findByEmail(email).isPresent()) {
             throw new EmailAlreadyRegisteredException();
         }
@@ -55,22 +58,39 @@ public class AuthService implements IAuthService {
         User user = new User();
         user.setEmail(email);
         user.setPassword(hashedPassword);
+
+        List<Role> roles = new ArrayList<>();
+
+        RoleTypeName roleTypeName = Arrays.stream(RoleTypeName.values())
+                        .filter(r -> r.name().equalsIgnoreCase(role))
+                                .findFirst()
+                                        .orElseThrow(() -> new InvalidRoleNameException());
+
+        Role roleObj = roleRepository.findByRoleTypeName(roleTypeName)
+                        .orElseGet(() -> {
+                            Role newRole = new Role(roleTypeName);
+                            return roleRepository.save(newRole);
+                        });
+
+        roles.add(roleObj);
+        user.setRoles(roles);
+
         userRepository.save(user);
 
-        try {
-            String topic = "user_signup";
-            EmailDto emailDto = new EmailDto();
-            emailDto.setFrom("springbootecom@gmail.com");
-            emailDto.setTo(email);
-            emailDto.setSubject("Welcome to EService");
-            emailDto.setBody("Have a pleasant shopping experience.");
-            String message = objectMapper.writeValueAsString(emailDto);
-            kafkaClient.sendMessage(topic,message);
-            System.out.println("Sending message to Kafka: " + message);
-
-        }catch (JsonProcessingException exception) {
-            throw new RuntimeException(exception.getMessage());
-        }
+//        try {
+//            String topic = "user_signup";
+//            EmailDto emailDto = new EmailDto();
+//            emailDto.setFrom("springbootecom@gmail.com");
+//            emailDto.setTo(email);
+//            emailDto.setSubject("Welcome to EService");
+//            emailDto.setBody("Have a pleasant shopping experience.");
+//            String message = objectMapper.writeValueAsString(emailDto);
+//            kafkaClient.sendMessage(topic,message);
+//            System.out.println("Sending message to Kafka: " + message);
+//
+//        }catch (JsonProcessingException exception) {
+//            throw new RuntimeException(exception.getMessage());
+//        }
         return user;
     }
 

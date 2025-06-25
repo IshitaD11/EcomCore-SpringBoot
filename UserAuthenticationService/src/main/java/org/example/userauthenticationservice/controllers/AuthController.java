@@ -26,11 +26,11 @@ public class AuthController {
     @PostMapping("/sign_up")
     public ResponseEntity<SignUpResponseDto> signUp(@RequestBody SignUpRequestDto requestDto){
         SignUpResponseDto responseDto = new SignUpResponseDto();
-        if(requestDto.getEmail() == null || requestDto.getPassword() == null) {
+        if(requestDto.getEmail() == null || requestDto.getPassword() == null || requestDto.getRole() == null) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
         try{
-                User user = authService.signup(requestDto.getEmail(), requestDto.getPassword());
+                User user = authService.signup(requestDto.getEmail(), requestDto.getPassword(), requestDto.getRole());
                 responseDto.setResponseStatus(ResponseStatus.SUCCESS);
                 return new ResponseEntity<>(responseDto, HttpStatus.OK);
         }catch (Exception ex){
