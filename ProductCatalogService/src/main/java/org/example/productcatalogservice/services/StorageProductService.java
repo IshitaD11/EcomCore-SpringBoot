@@ -1,12 +1,17 @@
 package org.example.productcatalogservice.services;
 
+import org.example.productcatalogservice.dtos.RoleTypeName;
+import org.example.productcatalogservice.dtos.UserResponseDto;
 import org.example.productcatalogservice.models.Category;
 import org.example.productcatalogservice.models.Product;
+import org.example.productcatalogservice.models.ProductVisibility;
 import org.example.productcatalogservice.repositories.CategoryRepository;
 import org.example.productcatalogservice.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
 
 import java.util.List;
 
@@ -19,6 +24,9 @@ public class StorageProductService implements IProductService{
     
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Override
     public List<Product> getAllProducts() {
@@ -71,6 +79,31 @@ public class StorageProductService implements IProductService{
             existingProduct.setCategory(null);
         }
         return productRepository.save(existingProduct);
+    }
+
+    @Override
+    public Product getProductByUserRoles(Long productId, Long userId) {
+        System.out.println("Inside ProductService.getProductByUserRoles");
+        Product product = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Product not found"));
+        System.out.println("found product " + product.getTitle());
+        if(product.getProductVisibility().equals(ProductVisibility.PUBLIC))
+            return product;
+
+        if(product.getProductVisibility().equals(ProductVisibility.PRIVATE)){
+            UserResponseDto userResponseDto =
+                    restTemplate.getForEntity("http://userauthenticationservice/users/{userId}", UserResponseDto.class, userId).getBody();
+            System.out.println("Found user ");
+            System.out.println("Roles size" + userResponseDto.getRoles().size());
+            System.out.println("role data" + userResponseDto.getRoles().get(0).getRoleTypeName());
+            if(userResponseDto!=null
+                    && userResponseDto.getRoles().size()>0
+                    && userResponseDto.getRoles().stream().anyMatch(roleDto -> roleDto.getRoleTypeName().equals(RoleTypeName.ADMIN))) {
+                System.out.println("UserDto not null");
+                return product;
+            }
+        }
+
+        return null;
     }
 
     private Category getCategoryFromRepo(Product product) {

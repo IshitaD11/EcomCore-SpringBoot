@@ -16,6 +16,7 @@ public class ProductProductDTOUtil {
         product.setDescription(productdto.getDescription());
         product.setPrice(productdto.getPrice());
         product.setImgUrl(productdto.getImgUrl());
+        product.setProductVisibility(productdto.getVisibility());
         if(productdto.getCategory() != null) {
             Category category = new Category();
             category.setId(productdto.getCategory().getId());

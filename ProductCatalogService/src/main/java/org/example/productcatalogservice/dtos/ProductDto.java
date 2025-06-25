@@ -3,6 +3,7 @@ package org.example.productcatalogservice.dtos;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
+import org.example.productcatalogservice.models.ProductVisibility;
 
 @Getter
 @Setter
@@ -14,4 +15,5 @@ public class ProductDto {
     private String imgUrl;
     private Double price;
     private CategoryDto category;
+    private ProductVisibility visibility;
 }

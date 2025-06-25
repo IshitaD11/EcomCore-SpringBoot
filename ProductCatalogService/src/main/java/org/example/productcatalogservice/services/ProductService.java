@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-//@Primary
 public class ProductService implements IProductService {
 
     @Autowired
@@ -65,6 +64,12 @@ public class ProductService implements IProductService {
                 throw new RuntimeException( "Product id must be greater than 20" );
         FakeStoreProductDto fakeStoreProductDto = fakeStoreApiClient.replaceProduct(productId, getFakeStoreProductDtoFromProduct(product));
         return getProductFromFakeStoreProductDto(fakeStoreProductDto);
+    }
+
+    @Override
+    public Product getProductByUserRoles(Long userId, Long productId) {
+        System.out.println("Inside FakeStoreProductService");
+        return null;
     }
 
     private FakeStoreProductDto getFakeStoreProductDtoFromProduct(Product product) {

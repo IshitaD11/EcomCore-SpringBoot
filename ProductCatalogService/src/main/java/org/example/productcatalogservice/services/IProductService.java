@@ -18,4 +18,6 @@ public interface IProductService {
     public Product createProduct(Product product) ;
 
     public Product replaceProduct(Long productId, Product product) ;
+
+    public Product getProductByUserRoles(Long userId, Long productId) ;
 }
