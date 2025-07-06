@@ -30,10 +30,12 @@ The **OrderService** handles order creation and management in the EcomCore-Micro
 Set the following in `application.properties` or your `.env` file:
 
 ```
-SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/ecom_orders
+SPRING_DATASOURCE_URL=dburl
 SPRING_DATASOURCE_USERNAME=root
 SPRING_DATASOURCE_PASSWORD=yourpassword
-EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://localhost:8761/eureka/
+eureka.client.register-with-eureka=true
+eureka.client.fetch-registry=true
+eureka.client.service-url.defaultZone=http://localhost:8761/eureka
 ```
 
 ### Running the Service
