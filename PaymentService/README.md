@@ -30,10 +30,12 @@ The **PaymentService** manages payment processing for orders in the EcomCore-Mic
 Set these in `application.properties` or your `.env` file:
 
 ```
-STRIPE_API_KEY=sk_test_xxx
-RAZORPAY_KEY=rzp_test_xxx
-RAZORPAY_SECRET=your_secret
-EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://localhost:8761/eureka/
+razorpay.key.id = rpay_key_id
+razorpay.key.secret = rpay_key_secret
+stripe.secret.key = stripe_secret_key
+eureka.client.register-with-eureka=true
+eureka.client.fetch-registry=true
+eureka.client.service-url.defaultZone=http://localhost:8761/eureka
 ```
 
 ### Running the Service
