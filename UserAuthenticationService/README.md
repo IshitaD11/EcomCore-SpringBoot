@@ -33,12 +33,9 @@ The **UserAuthenticationService** handles user registration, login, authenticati
 Set the following in `application.properties` or your `.env` file:
 
 ```
-SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/ecom_users
-SPRING_DATASOURCE_USERNAME=root
-SPRING_DATASOURCE_PASSWORD=yourpassword
-JWT_SECRET=mysecretkey
-SPRING_KAFKA_BOOTSTRAP_SERVERS=localhost:9092
-EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://localhost:8761/eureka/
+spring.datasource.url=DB_URL
+spring.datasource.username=DB_username
+spring.datasource.password=DB_PASSWORD
 ```
 
 ### Running the Service
