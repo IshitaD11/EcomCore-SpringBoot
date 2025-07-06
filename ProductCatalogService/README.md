@@ -32,12 +32,14 @@ The **ProductCatalogService** manages products in the EcomCore-Microservices pla
 Set the following in `application.properties` or `.env`:
 
 ```
-SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/ecom_products
-SPRING_DATASOURCE_USERNAME=root
-SPRING_DATASOURCE_PASSWORD=yourpassword
-SPRING_REDIS_HOST=localhost
-SPRING_REDIS_PORT=6379
-EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://localhost:8761/eureka/
+spring.datasource.url=DB_URL
+spring.datasource.username=DB_username
+spring.datasource.password=DB_PASSWORD
+spring.data.redis.port=6379
+spring.data.redis.host=localhost
+eureka.client.register-with-eureka=true
+eureka.client.fetch-registry=true
+eureka.client.service-url.defaultZone=http://localhost:8761/eureka
 ```
 
 ### Running the Service
