@@ -1,8 +1,11 @@
 package org.example.orderservice.controllers;
 
+import org.example.orderservice.dtos.OrderItemResponseDto;
 import org.example.orderservice.dtos.OrderRequestItem;
+import org.example.orderservice.dtos.OrderResponseDto;
 import org.example.orderservice.dtos.PaymentLinkUpdateRequest;
 import org.example.orderservice.models.Order;
+import org.example.orderservice.models.OrderItem;
 import org.example.orderservice.services.IOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,18 +22,45 @@ public class OrderController {
     private IOrderService orderService;
 
     @PostMapping("/place")
-    public Order placeOrder(@RequestParam Long userId, @RequestBody List<OrderRequestItem> items) {
-        return orderService.placeOrder(userId, items);
+    public ResponseEntity<OrderResponseDto> placeOrder(@RequestParam Long userId, @RequestBody List<OrderRequestItem> items) {
+        Order order = orderService.placeOrder(userId, items);
+        return ResponseEntity.ok(orderToOrderDto(order));
+    }
+
+    private OrderResponseDto orderToOrderDto(Order order) {
+        OrderResponseDto orderResponseDto = new OrderResponseDto();
+        orderResponseDto.setId(order.getId());
+        orderResponseDto.setUserId(order.getUserId());
+        orderResponseDto.setTotalAmount(order.getTotalAmount());
+        orderResponseDto.setStatus(order.getStatus().toString());
+        orderResponseDto.setItems(orderItemToOrderItemDto(order.getItems()));
+        orderResponseDto.setPaymentLink(order.getPaymentLink());
+        return orderResponseDto;
+    }
+
+    private List<OrderItemResponseDto> orderItemToOrderItemDto(List<OrderItem> items) {
+        return items.stream().map(item -> {
+            OrderItemResponseDto dto = new OrderItemResponseDto();
+            dto.setId(item.getId());
+            dto.setProductId(item.getProductId());
+            dto.setQuantity(item.getQuantity());
+            dto.setPrice(item.getPrice());
+            return dto;
+        }).toList();
     }
 
     @GetMapping("/{orderId}")
-    public Order getOrderById(@PathVariable Long orderId) {
-        return orderService.getOrderById(orderId);
+    public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable Long orderId) {
+        Order order = orderService.getOrderById(orderId);
+        return ResponseEntity.ok(orderToOrderDto(order));
     }
 
     @GetMapping("/user/{userId}")
-    public List<Order> getOrdersByUserId(@PathVariable Long userId) {
-        return orderService.getOrdersByUserId(userId);
+    public ResponseEntity<List<OrderResponseDto>> getOrdersByUserId(@PathVariable Long userId) {
+        List<Order> order = orderService.getOrdersByUserId(userId);
+        return ResponseEntity.ok(order.stream()
+                .map(this::orderToOrderDto)
+                .toList());
     }
 
     @PostMapping("/cancel/{orderId}")

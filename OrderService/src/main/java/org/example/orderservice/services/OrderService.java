@@ -2,7 +2,6 @@ package org.example.orderservice.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.orderservice.clients.KafkaClient;
 import org.example.orderservice.models.Order;
 import org.example.orderservice.models.OrderItem;
 import org.example.orderservice.models.OrderStatus;
@@ -16,6 +15,7 @@ import org.example.orderservice.dtos.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -27,8 +27,6 @@ public class OrderService implements IOrderService {
     @Autowired
     private RestTemplate restTemplate;
 
-    @Autowired
-    private KafkaClient kafkaClient;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -40,7 +38,7 @@ public class OrderService implements IOrderService {
 
         Order order = new Order();
         order.setUserId(userId);
-        order.setCreatedAt(LocalDateTime.now());
+        order.setCreatedAt(new Date());
         order.setStatus(OrderStatus.PLACED);
 
         List<OrderItem> orderItems = new ArrayList<>();
@@ -131,6 +129,7 @@ public class OrderService implements IOrderService {
             System.out.println("Payment service unavailable. Payment link will be generated later.");
             order.setPaymentLink(null);
         }
+        orderRepository.save(order);
         return null;
     }
 

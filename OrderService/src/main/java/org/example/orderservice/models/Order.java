@@ -1,5 +1,6 @@
 package org.example.orderservice.models;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,10 +11,11 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
+@JsonDeserialize(as = Order.class)
+@Table(name = "orders")
 public class Order extends BaseModel{
     private Long userId;
     private Double totalAmount;
-    private LocalDateTime createdAt;
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
