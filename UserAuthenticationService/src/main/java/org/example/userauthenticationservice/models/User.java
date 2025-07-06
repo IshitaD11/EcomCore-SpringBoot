@@ -15,6 +15,8 @@ import java.util.List;
 public class User extends BaseModel{
     private String email;
     private String password;
+    private String phoneNumber;
+    private String name;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_role",

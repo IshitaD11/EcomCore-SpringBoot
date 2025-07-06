@@ -9,6 +9,8 @@ import java.util.List;
 @Setter
 public class UserResponseDto {
     private String email;
+    private String name;
+    private String phoneNo;
     private ResponseStatus responseStatus;
     private List<RoleDto> roles;
 }

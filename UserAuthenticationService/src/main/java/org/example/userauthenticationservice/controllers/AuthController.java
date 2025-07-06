@@ -30,7 +30,7 @@ public class AuthController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
         try{
-                User user = authService.signup(requestDto.getEmail(), requestDto.getPassword(), requestDto.getRole());
+                User user = authService.signup(requestDto.getEmail(), requestDto.getPassword(), requestDto.getRole(), requestDto.getName(), requestDto.getPhoneNumber());
                 responseDto.setResponseStatus(ResponseStatus.SUCCESS);
                 return new ResponseEntity<>(responseDto, HttpStatus.OK);
         }catch (Exception ex){

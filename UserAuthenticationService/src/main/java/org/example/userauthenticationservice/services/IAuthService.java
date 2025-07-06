@@ -9,7 +9,7 @@ import org.example.userauthenticationservice.models.User;
 
 public interface IAuthService {
 
-    public User signup(String username, String password, String role) throws EmailAlreadyRegisteredException, InvalidRoleNameException;
+    public User signup(String email, String password, String role, String fullName, String phoneNo) throws EmailAlreadyRegisteredException, InvalidRoleNameException;
 
     public Pair<Boolean,String> login(String username, String password) throws UserNotFoundException, IncorrectEmailOrPassword;
 }

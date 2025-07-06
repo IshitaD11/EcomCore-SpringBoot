@@ -50,7 +50,7 @@ public class AuthService implements IAuthService {
     private ObjectMapper objectMapper;
 
     @Override
-    public User signup(String email, String password, String role) throws EmailAlreadyRegisteredException, InvalidRoleNameException {
+    public User signup(String email, String password, String role, String fullName, String phoneNo) throws EmailAlreadyRegisteredException, InvalidRoleNameException {
         if(userRepository.findByEmail(email).isPresent()) {
             throw new EmailAlreadyRegisteredException();
         }
@@ -58,6 +58,8 @@ public class AuthService implements IAuthService {
         User user = new User();
         user.setEmail(email);
         user.setPassword(hashedPassword);
+        user.setName(fullName);
+        user.setPhoneNumber(phoneNo);
 
         List<Role> roles = new ArrayList<>();
 
@@ -77,26 +79,26 @@ public class AuthService implements IAuthService {
 
         userRepository.save(user);
 
-//        try {
-//            String topic = "user_signup";
-//            EmailDto emailDto = new EmailDto();
-//            emailDto.setFrom("springbootecom@gmail.com");
-//            emailDto.setTo(email);
-//            emailDto.setSubject("Welcome to EService");
-//            emailDto.setBody("Have a pleasant shopping experience.");
-//            String message = objectMapper.writeValueAsString(emailDto);
-//            kafkaClient.sendMessage(topic,message);
-//            System.out.println("Sending message to Kafka: " + message);
-//
-//        }catch (JsonProcessingException exception) {
-//            throw new RuntimeException(exception.getMessage());
-//        }
+        try {
+            String topic = "user_signup";
+            EmailDto emailDto = new EmailDto();
+            emailDto.setFrom("springbootecom@gmail.com");
+            emailDto.setTo(email);
+            emailDto.setSubject("Welcome to EService");
+            emailDto.setBody("Have a pleasant shopping experience.");
+            String message = objectMapper.writeValueAsString(emailDto);
+            kafkaClient.sendMessage(topic,message);
+            System.out.println("Sending message to Kafka: " + message);
+
+        }catch (JsonProcessingException exception) {
+            throw new RuntimeException(exception.getMessage());
+        }
         return user;
     }
 
     @Override
     public Pair<Boolean,String> login(String email, String password) throws UserNotFoundException, IncorrectEmailOrPassword {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException());
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found"));
         if(passwordEncoder.matches(password, user.getPassword())) {
 
             String token = jwtUtil.generateToken(user);
