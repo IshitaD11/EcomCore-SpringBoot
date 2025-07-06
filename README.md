@@ -90,107 +90,107 @@ All further installations should be done inside your WSL2 environment.
 
 ### 3. Creating a .env File for Environment Variables and Running Services in WSL2
 
-## 1. Open Your WSL Terminal
-
-For example, open Ubuntu from your Start menu.
-
----
-
-## 2. Navigate to Your Project Directory
-
-```bash
-cd ~/your-project-folder
-```
-
----
-
-## 3. Create a .env File
-
-```bash
-nano .env
-```
-
----
-
-## 4. Add Your Environment Variables
-
-Add each variable on a separate line, e.g.:
-
-```
-DB_URL=jdbc:mysql://localhost:3306/mydb
-DB_USER=root
-DB_PASSWORD=yourpassword
-JWT_SECRET=mysecretkey
-```
-
-- Do **not** use quotes or the `export` keyword.
-- Save (Ctrl + O → Enter) and exit (Ctrl + X) in Nano.
-
----
-
-
-## 5. Start Zookeeper and Kafka (in WSL)
-
-Open a new terminal window for each process.
-
-- **Start Zookeeper:**
+  #### 1. Open Your WSL Terminal
+  
+  For example, open Ubuntu from your Start menu.
+  
+  ---
+  
+  #### 2. Navigate to Your Project Directory
+  
   ```bash
-  bin/zookeeper-server-start.sh config/zookeeper.properties
+  cd ~/your-project-folder
   ```
-
-- **Start Kafka Broker:**
+  
+  ---
+  
+  #### 3. Create a .env File
+  
   ```bash
-  bin/kafka-server-start.sh config/server.properties
+  nano .env
   ```
-
-(Refer to [Kafka Install Guide](https://learn.conduktor.io/kafka/how-to-install-apache-kafka-on-windows/) for more details.)
-
----
-
-## 6. Load Environment Variables into Your Shell and Run Each Microservice
-
-To export all variables from your `.env` file into your current terminal session. Set environment variable for each microservice
-
-```bash
-set -o allexport; source .env; set +o allexport
-```
-
-This makes the variables available to any command you run in this shell window.
-
----
-
-Run each microservice in a separate WSL2 terminal window (one per service):
-
-```bash
-cd ServiceDiscovery
-mvn spring-boot:run
-```
-```bash
-cd ../UserAuthenticationService
-mvn spring-boot:run
-```
-```bash
-cd ../ProductCatalogService
-mvn spring-boot:run
-```
-```bash
-cd ../OrderService
-mvn spring-boot:run
-```
-```bash
-cd ../PaymentService
-mvn spring-boot:run
-```
-```bash
-cd ../EmailService
-mvn spring-boot:run
-```
-
----
-
-**Tip:** Always load your `.env` variables in each terminal window before running a service.
-
----
+  
+  ---
+  
+  #### 4. Add Your Environment Variables
+  
+  Add each variable on a separate line, e.g.:
+  
+  ```
+  DB_URL=jdbc:mysql://localhost:3306/mydb
+  DB_USER=root
+  DB_PASSWORD=yourpassword
+  JWT_SECRET=mysecretkey
+  ```
+  
+  - Do **not** use quotes or the `export` keyword.
+  - Save (Ctrl + O → Enter) and exit (Ctrl + X) in Nano.
+  
+  ---
+  
+  
+  #### 5. Start Zookeeper and Kafka (in WSL)
+  
+  Open a new terminal window for each process.
+  
+  - **Start Zookeeper:**
+    ```bash
+    bin/zookeeper-server-start.sh config/zookeeper.properties
+    ```
+  
+  - **Start Kafka Broker:**
+    ```bash
+    bin/kafka-server-start.sh config/server.properties
+    ```
+  
+  (Refer to [Kafka Install Guide](https://learn.conduktor.io/kafka/how-to-install-apache-kafka-on-windows/) for more details.)
+  
+  ---
+  
+  #### 6. Load Environment Variables into Your Shell and Run Each Microservice
+  
+  To export all variables from your `.env` file into your current terminal session. Set environment variable for each microservice
+  
+  ```bash
+  set -o allexport; source .env; set +o allexport
+  ```
+  
+  This makes the variables available to any command you run in this shell window.
+  
+  ---
+  
+  Run each microservice in a separate WSL2 terminal window (one per service):
+  
+  ```bash
+  cd ServiceDiscovery
+  mvn spring-boot:run
+  ```
+  ```bash
+  cd ../UserAuthenticationService
+  mvn spring-boot:run
+  ```
+  ```bash
+  cd ../ProductCatalogService
+  mvn spring-boot:run
+  ```
+  ```bash
+  cd ../OrderService
+  mvn spring-boot:run
+  ```
+  ```bash
+  cd ../PaymentService
+  mvn spring-boot:run
+  ```
+  ```bash
+  cd ../EmailService
+  mvn spring-boot:run
+  ```
+  
+  ---
+  
+  **Tip:** Always load your `.env` variables in each terminal window before running a service.
+  
+  ---
 
 
 ## Useful Documentation & Links
