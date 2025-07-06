@@ -1,6 +1,6 @@
 # EmailService
 
-The **EmailService** is a Spring Boot microservice dedicated to sending transactional emails (e.g., welcome emails) in the EcomCore-Microservices platform. It listens for Kafka events and sends emails accordingly.
+The **EmailService** is a Spring Boot microservice dedicated to sending transactional emails (e.g., welcome emails) in the EcomCore-Microservices platform. It listens for Kafka events and sends emails accordingly.  
 
 ## Features
 
