@@ -55,15 +55,11 @@ public class ProductController {
 
     @GetMapping("/products/{id}")
     public ResponseEntity<ProductDto> getProductById(@PathVariable("id") Long productId) {
-        try {
-            Product product = productService.getProductById(productId);
-            if (product == null) {
-                throw new RuntimeException("Product not found");
-            }
-            return new ResponseEntity<>(pDtoUtil.productDtoFromProduct(product), HttpStatus.OK);
-        }catch (Exception e) {
-            throw e;
+        Product product = productService.getProductById(productId);
+        if (product == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
         }
+        return new ResponseEntity<>(pDtoUtil.productDtoFromProduct(product), HttpStatus.OK);
     }
 
     @PostMapping("/products")
