@@ -28,10 +28,8 @@ Set the following in `application.properties` or your `.env` file:
 
 ```
 SPRING_KAFKA_BOOTSTRAP_SERVERS=localhost:9092
-MAIL_HOST=smtp.example.com
-MAIL_PORT=587
-MAIL_USERNAME=your_email@example.com
 MAIL_PASSWORD=your_email_password
+spring.application.name=EmailService
 ```
 
 ### Running the Service
