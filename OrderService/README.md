@@ -33,9 +33,6 @@ Set the following in `application.properties` or your `.env` file:
 SPRING_DATASOURCE_URL=dburl
 SPRING_DATASOURCE_USERNAME=root
 SPRING_DATASOURCE_PASSWORD=yourpassword
-eureka.client.register-with-eureka=true
-eureka.client.fetch-registry=true
-eureka.client.service-url.defaultZone=http://localhost:8761/eureka
 ```
 
 ### Running the Service
