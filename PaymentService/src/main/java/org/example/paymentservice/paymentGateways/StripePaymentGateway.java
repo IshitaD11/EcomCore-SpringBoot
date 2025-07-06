@@ -18,8 +18,9 @@ public class StripePaymentGateway implements IPaymentGateway{
     @Override
     public String getPaymentLink(Long amount, String ref_id, String description, String phoneNo, String name, String email) {
         try {
+            System.out.println("Stripe");
             Stripe.apiKey = stripeSecretKey;
-            Price price = getPriceForStripe(amount);
+            Price price = getPriceForStripe(amount*100, description);
             PaymentLinkCreateParams params =
                     PaymentLinkCreateParams.builder()
                             .addLineItem(
@@ -41,21 +42,21 @@ public class StripePaymentGateway implements IPaymentGateway{
         }
     }
 
-    private Price getPriceForStripe(Long amount) {
+    private Price getPriceForStripe(Long amount, String description) {
         try {
             Stripe.apiKey = stripeSecretKey;
 
             PriceCreateParams params =
                     PriceCreateParams.builder()
-                            .setCurrency("usd")
+                            .setCurrency("inr")
                             .setUnitAmount(amount)
                             .setRecurring(
                                     PriceCreateParams.Recurring.builder()
-                                            .setInterval(PriceCreateParams.Recurring.Interval.MONTH)
+                                            //.setInterval(PriceCreateParams.Recurring.Interval.MONTH)
                                             .build()
                             )
                             .setProductData(
-                                    PriceCreateParams.ProductData.builder().setName("Gold Plan").build()
+                                    PriceCreateParams.ProductData.builder().setName(description).build()
                             )
                             .build();
 

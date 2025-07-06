@@ -17,12 +17,15 @@ public class RazorpayPaymentGateway implements IPaymentGateway{
     @Override
     public String getPaymentLink(Long amount,String ref_id,String description, String phoneNo, String name, String email) {
         try {
+            System.out.println("Razorpay");
+            Long epochtime = System.currentTimeMillis();
+            Long expiry = epochtime + 24*60*60*1000;
             JSONObject paymentLinkRequest = new JSONObject();
-            paymentLinkRequest.put("amount", amount);
+            paymentLinkRequest.put("amount", amount*100 ) ; // converting to paisa
             paymentLinkRequest.put("currency", "INR");
             paymentLinkRequest.put("accept_partial", true);
             paymentLinkRequest.put("first_min_partial_amount", 100);
-            paymentLinkRequest.put("expire_by", 1749125938);
+            paymentLinkRequest.put("expire_by", expiry);
             paymentLinkRequest.put("reference_id", ref_id);
             paymentLinkRequest.put("description", description);
             JSONObject customer = new JSONObject();
@@ -36,8 +39,8 @@ public class RazorpayPaymentGateway implements IPaymentGateway{
             paymentLinkRequest.put("notify", notify);
             paymentLinkRequest.put("reminder_enable", true);
             JSONObject notes = new JSONObject();
-            notes.put("policy_name", "Jeevan Bima");
-            paymentLinkRequest.put("notes", notes);
+//            notes.put("policy_name", "Jeevan Bima");
+//            paymentLinkRequest.put("notes", notes);
             paymentLinkRequest.put("callback_url", "https://example-callback-url.com/");
             paymentLinkRequest.put("callback_method", "get");
 
