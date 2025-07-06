@@ -27,9 +27,7 @@ The **EmailService** is a Spring Boot microservice dedicated to sending transact
 Set the following in `application.properties` or your `.env` file:
 
 ```
-SPRING_KAFKA_BOOTSTRAP_SERVERS=localhost:9092
 MAIL_PASSWORD=your_email_password
-spring.application.name=EmailService
 ```
 
 ### Running the Service
