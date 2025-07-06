@@ -35,11 +35,6 @@ Set the following in `application.properties` or `.env`:
 spring.datasource.url=DB_URL
 spring.datasource.username=DB_username
 spring.datasource.password=DB_PASSWORD
-spring.data.redis.port=6379
-spring.data.redis.host=localhost
-eureka.client.register-with-eureka=true
-eureka.client.fetch-registry=true
-eureka.client.service-url.defaultZone=http://localhost:8761/eureka
 ```
 
 ### Running the Service
